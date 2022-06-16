@@ -14,6 +14,8 @@ class ViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(promptForAnswer))
 
         if let startWorkdsURL = Bundle.main.url(forResource: "start", withExtension: "txt") {
             if let startWords = try? String(contentsOf: startWorkdsURL) {
@@ -26,6 +28,23 @@ class ViewController: UITableViewController {
         }
         
         startGame()
+    }
+    
+    @objc func promptForAnswer() {
+        let ac = UIAlertController(title: "Enter answer", message: nil, preferredStyle: .alert)
+        ac.addTextField()
+        
+        let submetAction = UIAlertAction(title: "Submit", style: .default) { [ weak self, weak ac] action in
+            guard let answer = ac?.textFields?[0].text else { return }
+            self?.submit(answer)
+        }
+        
+        ac.addAction(submetAction)
+        present(ac, animated: true)
+    }
+    
+    func submit(_ answer: String) {
+        print(answer)
     }
     
     func startGame() {
