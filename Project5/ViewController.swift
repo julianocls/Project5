@@ -55,6 +55,7 @@ class ViewController: UITableViewController {
     
     func submit(_ answer: String) {
         let lowerAnswer = answer.lowercased()
+        var isSuccess = false
 
         if isPossible(word: lowerAnswer) {
             if isOriginal(word: lowerAnswer) {
@@ -63,8 +64,15 @@ class ViewController: UITableViewController {
 
                     let indexPath = IndexPath(row: 0, section: 0)
                     tableView.insertRows(at: [indexPath], with: .automatic)
+                    isSuccess = true
                 }
             }
+        }
+        
+        if !isSuccess {
+            let ae = UIAlertController(title: "Wrong!", message: "Sorry, try again", preferredStyle: .alert)
+            ae.addAction(UIAlertAction(title: "Ok", style: .default))
+            present(ae, animated: true)
         }
     }
     
@@ -75,15 +83,29 @@ class ViewController: UITableViewController {
     }
     
     func isPossible(word: String) -> Bool {
+        guard var tempWord = title?.lowercased() else { return false }
+
+        for letter in word {
+            if let position = tempWord.firstIndex(of: letter) {
+                tempWord.remove(at: position)
+            } else {
+                return false
+            }
+        }
+
         return true
     }
 
     func isOriginal(word: String) -> Bool {
-        return true
+        return !usedWords.contains(word)
     }
-
+    
     func isReal(word: String) -> Bool {
-        return true
+        let checker = UITextChecker()
+        let range = NSRange(location: 0, length: word.utf16.count)
+        let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "pt_BR")
+
+        return misspelledRange.location == NSNotFound
     }
 }
 
