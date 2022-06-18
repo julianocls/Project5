@@ -55,7 +55,9 @@ class ViewController: UITableViewController {
     
     func submit(_ answer: String) {
         let lowerAnswer = answer.lowercased()
-        var isSuccess = false
+
+        let errorTitle: String
+        let errorMessage: String
 
         if isPossible(word: lowerAnswer) {
             if isOriginal(word: lowerAnswer) {
@@ -64,16 +66,25 @@ class ViewController: UITableViewController {
 
                     let indexPath = IndexPath(row: 0, section: 0)
                     tableView.insertRows(at: [indexPath], with: .automatic)
-                    isSuccess = true
+
+                    return
+                } else {
+                    errorTitle = "Word not recognised"
+                    errorMessage = "You can't just make them up, you know!"
                 }
+            } else {
+                errorTitle = "Word used already"
+                errorMessage = "Be more original!"
             }
+        } else {
+            guard let title = title?.lowercased() else { return }
+            errorTitle = "Word not possible"
+            errorMessage = "You can't spell that word from \(title)"
         }
-        
-        if !isSuccess {
-            let ae = UIAlertController(title: "Wrong!", message: "Sorry, try again", preferredStyle: .alert)
-            ae.addAction(UIAlertAction(title: "Ok", style: .default))
-            present(ae, animated: true)
-        }
+
+        let ac = UIAlertController(title: errorTitle, message: errorMessage, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
     }
     
     func startGame() {
@@ -108,22 +119,4 @@ class ViewController: UITableViewController {
         return misspelledRange.location == NSNotFound
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
